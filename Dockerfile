@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG UBUNTU_VERSION=24.04
-
+ARG OBSERVER_IMAGE=ghcr.io/emirkmo/copyfk8s-poc:observer-ubuntu24.04
 # Stage: observer
 #
 # Contains:
@@ -67,6 +67,7 @@ WORKDIR /src
 COPY copy-fail-c/ ./
 
 RUN make vulnerable
+RUN make exploit
 
 
 ################################################################################
@@ -85,15 +86,12 @@ RUN make vulnerable
 #   - /copyfail-probe/testfile
 ################################################################################
 
-FROM observer AS mutator
+FROM ${OBSERVER_IMAGE} AS mutator
 
-COPY --from=builder /src/vulnerable /usr/local/bin/dummy-mutator
-# Below not actually needed, I was curious.
-COPY --from=builder /src/utils.o /usr/local/bin/utils.o
+#COPY --from=builder /src/vulnerable /usr/local/bin/dummy-mutator
+COPY --from=builder /src/exploit /usr/local/bin/dummy-mutator
 
 USER observer
 WORKDIR /copyfail-probe
 
 ENTRYPOINT ["/usr/local/bin/dummy-mutator"]
-# Technically not needed:
-CMD ["/copyfail-probe/testfile"]

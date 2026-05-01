@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: copyfail-mutator
-  namespace: lab-test
+  namespace: <NAMESPACE>
   labels:
     app: copyfail-repro
     role: mutator

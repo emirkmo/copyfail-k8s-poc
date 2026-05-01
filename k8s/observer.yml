@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: copyfail-observer
-  namespace: <NAMESPACE>
+  namespace: ddm-iceberg
   labels:
     app: copyfail-repro
     role: observer
@@ -17,7 +17,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: observer
-          image: ghcr.io/emirkmo/copyfk8s-poc:mutator-ubuntu24.04
+          image: ghcr.io/emirkmo/copyfk8s-poc:observer-ubuntu24.04
           imagePullPolicy: Always
           env:
             - name: INTERVAL_SECONDS

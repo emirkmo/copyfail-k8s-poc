@@ -9,6 +9,8 @@ env:
   UBUNTU_VERSION: "24.04"
 
 jobs:
+
+
   build-and-publish:
     runs-on: ubuntu-latest
 
@@ -52,6 +54,7 @@ jobs:
           push: true
           build-args: |
             UBUNTU_VERSION=${{ env.UBUNTU_VERSION }}
+            OBSERVER_IMAGE=ghcr.io/emirkmo/copyfk8s-poc:observer-ubuntu24.04
           tags: |
             ghcr.io/emirkmo/copyfk8s-poc:mutator-ubuntu24.04
             ghcr.io/emirkmo/copyfk8s-poc:mutator-latest
