@@ -1,3 +1,3 @@
 [submodule "copy-fail-c"]
 	path = copy-fail-c
-	url = git@github.com:emirkmo/copy-fail-c.git
+	url = https://github.com/emirkmo/copy-fail-c.git
