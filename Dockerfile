@@ -67,7 +67,7 @@ WORKDIR /src
 COPY copy-fail-c/ ./
 
 RUN make vulnerable
-RUN make exploit
+#RUN make exploit
 
 
 ################################################################################
@@ -88,8 +88,8 @@ RUN make exploit
 
 FROM ${OBSERVER_IMAGE} AS mutator
 
-#COPY --from=builder /src/vulnerable /usr/local/bin/dummy-mutator
-COPY --from=builder /src/exploit /usr/local/bin/dummy-mutator
+COPY --from=builder /src/vulnerable /usr/local/bin/dummy-mutator
+#COPY --from=builder /src/exploit /usr/local/bin/dummy-mutator
 
 USER observer
 WORKDIR /copyfail-probe
