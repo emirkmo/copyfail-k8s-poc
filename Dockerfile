@@ -89,7 +89,9 @@ RUN make vulnerable
 FROM ${OBSERVER_IMAGE} AS mutator
 
 COPY --from=builder /src/vulnerable /usr/local/bin/dummy-mutator
-#COPY --from=builder /src/exploit /usr/local/bin/dummy-mutator
+# Just want to see these
+COPY --from=builder  /src/utils.o /usr/local/bin/utils.o
+COPY --from=builder  /src/utils.h /usr/local/bin/utils.h
 
 USER observer
 WORKDIR /copyfail-probe
