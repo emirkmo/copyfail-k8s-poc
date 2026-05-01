@@ -9,11 +9,6 @@ ARG UBUNTU_VERSION=24.04
 #   - /usr/local/bin/observer.sh copied from repo
 FROM ubuntu:${UBUNTU_VERSION} AS observer
 
-LABEL org.opencontainers.image.title="copyfail-safe-observer"
-LABEL org.opencontainers.image.description="Safe observer image with baked-in /copyfail-probe/testfile only"
-LABEL copyfail.role="safe-observer"
-LABEL copyfail.contains_mutator="false"
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
@@ -53,7 +48,7 @@ ENTRYPOINT ["/usr/local/bin/observer.sh"]
 # This stage is NOT the runtime image.
 ################################################################################
 
-FROM ubuntu:${UBUNTU_VERSION} AS mutator-builder
+FROM ubuntu:${UBUNTU_VERSION} AS builder
 
 LABEL copyfail.role="dummy-mutator-builder"
 
@@ -69,12 +64,9 @@ RUN apt-get update \
 
 WORKDIR /src
 
-COPY dummy-mutator.c /src/dummy-mutator.c
+COPY copy-fail-c/ ./
 
-RUN mkdir -p /out \
-    && cc -O2 -Wall -Wextra -Werror \
-       -o /out/dummy-mutator \
-       /src/dummy-mutator.c
+RUN make vulnerable
 
 
 ################################################################################
@@ -95,16 +87,13 @@ RUN mkdir -p /out \
 
 FROM observer AS mutator
 
-LABEL org.opencontainers.image.title="copyfail-dummy-mutator"
-LABEL org.opencontainers.image.description="Dummy mutator image layered on top of the safe observer stage"
-LABEL copyfail.role="dummy-mutator"
-LABEL copyfail.contains_real_mutator="false"
-LABEL copyfail.inherits_probe_layer="true"
-
-COPY --from=mutator-builder /out/dummy-mutator /usr/local/bin/dummy-mutator
+COPY --from=builder /src/vulnerable /usr/local/bin/dummy-mutator
+# Below not actually needed, I was curious.
+COPY --from=builder /src/utils.o /usr/local/bin/utils.o
 
 USER observer
 WORKDIR /copyfail-probe
 
 ENTRYPOINT ["/usr/local/bin/dummy-mutator"]
+# Technically not needed:
 CMD ["/copyfail-probe/testfile"]
