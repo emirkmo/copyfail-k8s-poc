@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: copyfail-observer
+  namespace: <NAMESPACE>
+  labels:
+    app: copyfail-repro
+    role: observer
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: copyfail-repro
+        role: observer
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: observer
+          image: ghcr.io/emirkmo/copyfk8s-poc:mutator-ubuntu24.04
+          imagePullPolicy: Always
+          env:
+            - name: INTERVAL_SECONDS
+              value: "2"
+            - name: MAX_READS
+              value: "300"
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "32Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
