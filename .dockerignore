@@ -1,0 +1,10 @@
+.git
+.gitignore
+*.o
+*.a
+*.so
+*.out
+build/
+dist/
+target/
+node_modules/
